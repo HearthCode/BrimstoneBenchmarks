@@ -200,7 +200,7 @@ namespace Brimstone.Benchmark
 			string filter = string.Empty;
 			int timeout = -1;
 
-			string usage = "Usage: benchmarks [--filter=regex] [--timeout=milliseconds] [--set=disable1[,disable2...] [--set=...]]...";
+			string usage = "Usage: benchmarks [--filter=regex] [--timeout=milliseconds] [--unset=disable1[,disable2...] [--unset=...]]...";
 
 			// Get list of all valid settings names
 			var settingsNames = typeof(Brimstone.Settings).GetFields(BindingFlags.Static | BindingFlags.Public).Select(s => s.Name);
@@ -222,7 +222,7 @@ namespace Brimstone.Benchmark
 								return;
 							}
 							break;
-						case "--set":
+						case "--unset":
 							if (value.Length == 0)
 								DisabledOptionsSets.Add(new List<string>());
 							else {
