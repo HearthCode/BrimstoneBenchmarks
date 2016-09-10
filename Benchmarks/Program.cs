@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -24,26 +25,17 @@ namespace Brimstone.Benchmark
 			var testName = test.Name + (test.Iterations > 1 ? "; " + test.Iterations + " iterations" : "");
 			var results = new List<long>();
 
-			for (int i = 0; i < (Benchmarks.Extended? 7 : 4); i++) {
-				Settings.CopyOnWrite = true;
-				Settings.ZoneCaching = true;
-				Settings.EntityHashCaching = true;
-				Settings.GameHashCaching = true;
-				Settings.UseGameHashForEquality = true;
-				Settings.ParallelTreeSearch = true;
-				Settings.ParallelClone = false;
+			// Get all settings fields
+			var settingsFields = typeof(Brimstone.Settings).GetFields(BindingFlags.Static | BindingFlags.Public);
 
-				switch (i) {
-					case 0: break;
-					case 1: Settings.ParallelTreeSearch = false; break;
-					case 2: Settings.CopyOnWrite = false; break;
-					case 3: Settings.ZoneCaching = false; break;
-					case 4: Settings.EntityHashCaching = Settings.GameHashCaching = false; break;
-					case 5: Settings.UseGameHashForEquality = false; break;
-					case 6: Settings.CopyOnWrite = Settings.ZoneCaching =
-							Settings.EntityHashCaching = Settings.GameHashCaching =
-							Settings.UseGameHashForEquality = false; break;
-				}
+			for (int i = 0; i < Benchmarks.DisabledOptionsSets.Count; i++) {
+				// Enable all settings by default
+				foreach (var field in settingsFields)
+					field.SetValue(null, true);
+
+				// Disable the specified options
+				foreach (var disable in Benchmarks.DisabledOptionsSets[i])
+					settingsFields.First(s => s.Name == disable).SetValue(null, false);
 
 				var game = test.SetupCode();
 				if (timeoutMs != -1) {
@@ -127,7 +119,7 @@ namespace Brimstone.Benchmark
 
 	internal partial class Benchmarks
 	{
-		public static bool Extended = false;
+		public static List<List<string>> DisabledOptionsSets = new List<List<string>>();
 		public Dictionary<string, Test> Tests;
 
 		// Create and start a game with Player 1 as the first player and no decks
@@ -195,7 +187,10 @@ namespace Brimstone.Benchmark
 			string filter = string.Empty;
 			int timeout = -1;
 
-			string usage = "Usage: benchmarks [--filter=text] [--timeout=milliseconds] [--extended]...";
+			string usage = "Usage: benchmarks [--filter=text] [--timeout=milliseconds] [--set=disable1[,disable2...] [--set=...]]...";
+
+			// Get list of all valid settings names
+			var settingsNames = typeof(Brimstone.Settings).GetFields(BindingFlags.Static | BindingFlags.Public).Select(s => s.Name);
 
 			foreach (string a in args) {
 				try {
@@ -214,8 +209,22 @@ namespace Brimstone.Benchmark
 								return;
 							}
 							break;
-						case "--extended":
-							Extended = true;
+						case "--set":
+							if (value.Length == 0)
+								DisabledOptionsSets.Add(new List<string>());
+							else {
+								var settingsToDisable = value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+								var casedSettingsToDisable = new List<string>();
+								foreach (var s in settingsToDisable) {
+									if (!settingsNames.Select(n => n.ToLower()).Contains(s.ToLower())) {
+										Console.WriteLine("Invalid setting option: " + s + " - valid options are " + string.Join(", ", settingsNames));
+										return;
+									}
+									// Use the exact casing
+									casedSettingsToDisable.Add(settingsNames.First(n => n.ToLower() == s.ToLower()));
+								}
+								DisabledOptionsSets.Add(casedSettingsToDisable);
+							}
 							break;
 						default:
 							Console.WriteLine(usage);
@@ -233,6 +242,23 @@ namespace Brimstone.Benchmark
 #endif
 			if (!string.IsNullOrEmpty(filter))
 				Console.WriteLine("Running benchmarks using filter: " + filter);
+
+			if (DisabledOptionsSets.Count == 0)
+				DisabledOptionsSets.Add(new List<string>());
+
+			for (int i = 0; i < DisabledOptionsSets.Count; i++) {
+				Console.Write("Sub-test " + (i+1) + " ");
+				var list = DisabledOptionsSets[i];
+				if (list.Count == 0)
+					Console.WriteLine("will enable all settings");
+				else {
+					Console.Write("will disable: ");
+					foreach (var item in list)
+						Console.Write(item + " ");
+					Console.WriteLine("");
+				}
+			}
+			Console.WriteLine("");
 
 			var b = new Benchmarks();
 			b.LoadDefinitions();
