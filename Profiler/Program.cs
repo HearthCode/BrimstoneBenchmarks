@@ -218,7 +218,7 @@ namespace BrimstoneProfiler
 			}
 			finally
 			{
-				p.ProjectCollection.UnloadProject(p);
+				p.ProjectCollection.UnloadAllProjects();
 			}
 			return true;
 		}
