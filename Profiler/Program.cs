@@ -12,9 +12,11 @@ namespace BrimstoneProfiler
 {
 	class Profiler
 	{
+		public static bool CompilerOutput = false;
+
 		static void Main(string[] args)
 		{
-			string usage = "Usage: profiler --commit-range=oldest-commit-id[,newest-commit-id] [--base-path=path-to-solutions] [arguments-to-pass-to-benchmarks]\r\n\r\nIf no base path is specified, Profiler will search all ancestors of the current directory by default";
+			string usage = "Usage: profiler --commit-range=oldest-commit-id[,newest-commit-id] [--compiler-output] [--base-path=path-to-solutions] [arguments-to-pass-to-benchmarks]\r\n\r\nIf no base path is specified, Profiler will search all ancestors of the current directory by default";
 			string benchmarkArguments = string.Empty;
 			string repoPath = string.Empty;
 			string oldestCommitID = string.Empty;
@@ -42,6 +44,9 @@ namespace BrimstoneProfiler
 							break;
 						case "--base-path":
 							repoPath = value;
+							break;
+						case "--compiler-output":
+							CompilerOutput = true;
 							break;
 						default:
 							benchmarkArguments += name + "=" + value;
@@ -171,20 +176,20 @@ namespace BrimstoneProfiler
 
 		public static bool TryBuild(string name, string projectPath) {
 			Project p = null;
-#if DEBUG
 			ConsoleLogger logger = new ConsoleLogger(LoggerVerbosity.Normal);
-#endif
 			try
 			{
 				Console.Write("Building " + name + "...");
 				p = new Project(projectPath);
 				p.SetGlobalProperty("Configuration", "Release");
-#if DEBUG
-				if (p.Build(logger))
-#else
-				if (p.Build())
-#endif
-				{
+
+				bool success;
+				if (CompilerOutput)
+					success = p.Build(logger);
+				else
+					success = p.Build();
+
+				if (success) {
 					Console.WriteLine(" build successful");
 				}
 				else
