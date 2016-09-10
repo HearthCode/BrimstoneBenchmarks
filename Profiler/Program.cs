@@ -49,7 +49,7 @@ namespace BrimstoneProfiler
 							CompilerOutput = true;
 							break;
 						default:
-							benchmarkArguments += name + "=" + value;
+							benchmarkArguments += name + "=" + value + " ";
 							break;
 					}
 				}
