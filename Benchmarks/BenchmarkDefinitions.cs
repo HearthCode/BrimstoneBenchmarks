@@ -155,15 +155,19 @@ namespace Brimstone.Benchmark
 		public void Test_6AMUniqueStatesBFS(Game g, int it) {
 			_missilesUniqueStates(g, it, 6, new BreadthFirstActionWalker());
 		}
+
 		public void Test_7AMUniqueStatesBFS(Game g, int it) {
 			_missilesUniqueStates(g, it, 7, new BreadthFirstActionWalker());
 		}
+
 		public void Test_8AMUniqueStatesBFS(Game g, int it) {
 			_missilesUniqueStates(g, it, 8, new BreadthFirstActionWalker());
 		}
+
 		public void Test_9AMUniqueStatesBFS(Game g, int it) {
 			_missilesUniqueStates(g, it, 9, new BreadthFirstActionWalker());
 		}
+
 		public void Test_10AMUniqueStatesBFS(Game g, int it) {
 			_missilesUniqueStates(g, it, 10, new BreadthFirstActionWalker());
 		}

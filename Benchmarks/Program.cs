@@ -131,7 +131,7 @@ namespace Brimstone.Benchmark
 
 		// Create and start a game with Player 1 as the first player and no decks
 		public static Game NewEmptyGame() {
-			var game = new Game(HeroClass.Druid, HeroClass.Druid, PowerHistory: true);
+			var game = new Game(HeroClass.Druid, HeroClass.Druid, PowerHistory: false);
 			Debug.Assert(game.Entities.Count == 6);
 			game.Start(FirstPlayer: 1, SkipMulligan: true);
 			return game;
@@ -141,7 +141,7 @@ namespace Brimstone.Benchmark
 		public static Game NewPopulatedGame() {
 			var cOut = Console.Out;
 			Console.SetOut(TextWriter.Null);
-			var game = new Game(HeroClass.Druid, HeroClass.Druid, PowerHistory: true);
+			var game = new Game(HeroClass.Druid, HeroClass.Druid, PowerHistory: false);
 			game.Player1.Deck.Fill();
 			game.Player2.Deck.Fill();
 			Debug.Assert(game.Entities.Count == 66);
@@ -156,7 +156,7 @@ namespace Brimstone.Benchmark
 		public static Game NewScenarioGame(int MaxMinions, int NumBoomBots, string FillMinion, bool FillDeck = true) {
 			var cOut = Console.Out;
 			Console.SetOut(TextWriter.Null);
-			var game = new Game(HeroClass.Druid, HeroClass.Druid, PowerHistory: true);
+			var game = new Game(HeroClass.Druid, HeroClass.Druid, PowerHistory: false);
 			if (FillDeck) {
 				game.Player1.Deck.Fill();
 				game.Player2.Deck.Fill();
