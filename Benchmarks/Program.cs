@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -171,23 +172,29 @@ namespace Brimstone.Benchmark
 
 		public void Run(string filter, int timeout) {
 			var benchmark = new Supervisor(timeout);
+			bool any = false;
 
 			foreach (var kv in Tests)
-				if (kv.Key.ToLower().Contains(filter)) {
+				if (Regex.IsMatch(kv.Key.ToLower(), filter)) {
 					Console.Write(("Test [" + kv.Key + "]: ").PadRight(60));
 					benchmark.Run(kv.Value);
+					any = true;
 				}
 
-			var path = "benchmarks.csv";
-			benchmark.WriteResults(path);
-			Console.WriteLine("Benchmark results written to: " + path);
+			if (any) {
+				var path = "benchmarks.csv";
+				benchmark.WriteResults(path);
+				Console.WriteLine("Benchmark results written to: " + path);
+			} else {
+				Console.WriteLine("No tests to run");
+			}
 		}
 
 		static void Main(string[] args) {
 			string filter = string.Empty;
 			int timeout = -1;
 
-			string usage = "Usage: benchmarks [--filter=text] [--timeout=milliseconds] [--set=disable1[,disable2...] [--set=...]]...";
+			string usage = "Usage: benchmarks [--filter=regex] [--timeout=milliseconds] [--set=disable1[,disable2...] [--set=...]]...";
 
 			// Get list of all valid settings names
 			var settingsNames = typeof(Brimstone.Settings).GetFields(BindingFlags.Static | BindingFlags.Public).Select(s => s.Name);
