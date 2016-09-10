@@ -1,4 +1,6 @@
-﻿using System;
+﻿// NOTE: The benchmarking tools work with commit 1006ccd5 (4th Septmber 2016 - 6:04:14am) onwards
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;

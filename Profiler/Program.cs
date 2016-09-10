@@ -108,10 +108,7 @@ namespace BrimstoneProfiler
 
 				// Build projects and run benchmarks
 				List<string> results;
-				if (!Benchmarks(repoPath, benchmarkArguments, out results)) {
-					Console.WriteLine("A fatal error occurred - exiting");
-					return;
-				}
+				Benchmarks(repoPath, benchmarkArguments, out results);
 
 				// First 3 lines are header information
 				if (results.Any()) {
@@ -143,16 +140,16 @@ namespace BrimstoneProfiler
 			Console.WriteLine("Results written to profiler.csv");
 		}
 
-		public static bool Benchmarks(string repoPath, string benchmarkArguments, out List<string> csv) {
+		public static void Benchmarks(string repoPath, string benchmarkArguments, out List<string> csv) {
 			csv = new List<string>();
 
 			// Build Brimstone
 			if (!TryBuild("Brimstone", repoPath + @"\Brimstone\Brimstone\Brimstone.csproj"))
-				return false;
+				return;
 
 			// Build Benchmarks
 			if (!TryBuild("Benchmarks", repoPath + @"\BrimstoneProfiler\Benchmarks\Benchmarks.csproj"))
-				return false;
+				return;
 
 			// Run Benchmarks twice (the first set is always inaccurate because of JIT compilation)
 			Console.WriteLine("Running benchmarks...\r\n");
@@ -170,7 +167,6 @@ namespace BrimstoneProfiler
 			catch (FileNotFoundException) {
 				Console.WriteLine("\r\nRunning benchmarks failed - no output produced - skipping");
 			}
-			return true;
 		}
 
 		public static bool TryBuild(string name, string projectPath) {
@@ -193,7 +189,7 @@ namespace BrimstoneProfiler
 				}
 				else
 				{
-					Console.WriteLine(" build failed");
+					Console.WriteLine(" build failed - skipping");
 					return false;
 				}
 			}
