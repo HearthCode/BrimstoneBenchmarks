@@ -94,6 +94,9 @@ namespace BrimstoneProfiler
 			commits.Add(oldestCommitID);
 			commits.Reverse();
 
+			if (newestCommitID.ToLower() == oldestCommitID.ToLower())
+				commits = new List<string> { newestCommitID };
+
 			// Produce benchmarks for each commit from oldest to newest
 			var testNames = new List<string>();
 			var resultSet = new List<List<string>>();
@@ -103,6 +106,7 @@ namespace BrimstoneProfiler
 
 			foreach (var commitId in commits) {
 				// Checkout selected commit
+				Console.WriteLine("Checking out commit " + commitId);
 				procInfo = new ProcessStartInfo("git");
 				procInfo.Arguments = "checkout " + commitId;
 				procInfo.UseShellExecute = false;
