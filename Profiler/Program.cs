@@ -94,6 +94,8 @@ namespace BrimstoneProfiler
 			var resultSet = new List<List<string>>();
 			bool gotNames = false;
 
+			var csv = "Test Name,";
+
 			foreach (var commitId in commits) {
 				// Checkout selected commit
 				procInfo = new ProcessStartInfo("git");
@@ -113,6 +115,10 @@ namespace BrimstoneProfiler
 
 				// First 3 lines are header information
 				if (results.Any()) {
+					// Process results
+					Console.WriteLine("Merging results...");
+
+					csv += commitId.Substring(0, Math.Min(commitId.Length, 8)) + ",";
 					var these = new List<string>();
 					foreach (var r in results.Skip(3)) {
 						var n = r.Split(new[] {','});
@@ -126,7 +132,7 @@ namespace BrimstoneProfiler
 			}
 
 			// Produce CSV
-			var csv = "Test Name," + string.Join(",", commits.Select(x => x.Substring(0, Math.Min(x.Length, 8)))) + "\r\n";
+			csv = csv.Substring(0, csv.Length - 1) + "\r\n";
 			for (int row = 0; row < resultSet[0].Count; row++) {
 				csv += testNames[row] + ",";
 				for (int col = 0; col < resultSet.Count; col++)
@@ -159,9 +165,6 @@ namespace BrimstoneProfiler
 
 			try {
 				csv = File.ReadAllLines("benchmarks.csv").ToList();
-				// Process results
-				Console.WriteLine("Merging results...");
-
 				File.Delete("benchmarks.csv");
 			}
 			catch (FileNotFoundException) {
