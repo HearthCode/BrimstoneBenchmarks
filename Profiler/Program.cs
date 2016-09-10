@@ -148,6 +148,15 @@ namespace BrimstoneProfiler
 		public static void Benchmarks(string repoPath, string benchmarkArguments, out List<string> csv) {
 			csv = new List<string>();
 
+			// Restore NuGet Packages
+			Console.WriteLine("Restoring NuGet packages...");
+			var procInfo = new ProcessStartInfo("nuget");
+			procInfo.Arguments = "restore " + repoPath + @"\Brimstone\Brimstone.sln";
+			procInfo.UseShellExecute = false;
+			procInfo.WorkingDirectory = Directory.GetCurrentDirectory();
+			using (var ngProcess = Process.Start(procInfo))
+				ngProcess.WaitForExit();
+
 			// Build Brimstone
 			if (!TryBuild("Brimstone", repoPath + @"\Brimstone\Brimstone\Brimstone.csproj"))
 				return;
@@ -158,7 +167,7 @@ namespace BrimstoneProfiler
 
 			// Run Benchmarks twice (the first set is always inaccurate because of JIT compilation)
 			Console.WriteLine("Running benchmarks...\r\n");
-			var procInfo = new ProcessStartInfo(repoPath + @"\BrimstoneProfiler\Benchmarks\bin\Release\Benchmarks.exe");
+			procInfo = new ProcessStartInfo(repoPath + @"\BrimstoneProfiler\Benchmarks\bin\Release\Benchmarks.exe");
 			procInfo.Arguments = benchmarkArguments;
 			procInfo.UseShellExecute = false;
 			procInfo.WorkingDirectory = Directory.GetCurrentDirectory();
