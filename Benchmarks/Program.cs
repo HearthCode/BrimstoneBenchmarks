@@ -90,6 +90,12 @@ namespace Brimstone.Benchmark
 		}
 
 		public void WriteResults(string path) {
+			// Make sub-test columns
+			string testHeader = string.Empty;
+			for (int i = 1; i <= Benchmarks.DisabledOptionsSets.Count; i++)
+				testHeader += i + ",";
+			testHeader = testHeader.Substring(0, testHeader.Length - 1);
+
 			csv.Insert(0,
 			"Build," +
 #if DEBUG
@@ -98,7 +104,7 @@ namespace Brimstone.Benchmark
 			"Release " +
 #endif
 			Assembly.GetAssembly(typeof(Game)).GetName().Version + "\r\n" +
-			"\"\",\"\"\r\nTest Name,All Opts,Sequential,CoW Disabled,Zone Cache Disabled,Hash Cache Disabled,Hash Equality Disabled,No Opts\r\n");
+			"\"\",\"\"\r\nTest Name," + testHeader + "\r\n");
 			File.WriteAllText(path, csv.ToString());
 		}
 	}
