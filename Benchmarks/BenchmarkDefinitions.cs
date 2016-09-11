@@ -80,9 +80,9 @@ namespace Brimstone.Benchmark
 		public void Test_BoomBotPreDeathrattle(Game g, int it) {
 			// Capture after Boom Bot has died but before Deathrattle executes
 			var BoomBot = g.Player1.Board.First(t => t.Card.Id == "GVG_110t");
-			g.ActionQueue.OnAction += (o, e) => {
+			g.ActionQueue.OnActionStarting += (o, e) => {
 				ActionQueue queue = o as ActionQueue;
-				if (e.Action is Death && e.Source == BoomBot) {
+				if (e.Action is GameBlock && ((GameBlock)e.Action).Block.Type == BlockType.TRIGGER && e.Source.Id == BoomBot.Id) {
 					for (int i = 0; i < it; i++) {
 						Game cloned = g.CloneState();
 						cloned.ActionQueue.ProcessAll();
