@@ -8,7 +8,7 @@ using Microsoft.Build.Exceptions;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Logging;
 
-namespace BrimstoneProfiler
+namespace Brimstone.Profiler
 {
 	class Profiler
 	{

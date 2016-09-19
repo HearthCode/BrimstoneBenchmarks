@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Brimstone.Actions;
+using Brimstone.Entities;
+using Brimstone.Tree;
 using static Brimstone.Behaviours;
 
 namespace Brimstone.Benchmark

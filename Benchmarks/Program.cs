@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Brimstone.Entities;
 
 namespace Brimstone.Benchmark
 {
@@ -34,7 +35,8 @@ namespace Brimstone.Benchmark
 			for (int i = 0; i < Benchmarks.DisabledOptionsSets.Count; i++) {
 				// Enable all settings by default
 				foreach (var field in settingsFields)
-					field.SetValue(null, true);
+					if (field.FieldType.FullName == "Boolean")
+						field.SetValue(null, true);
 
 				// Disable the specified options
 				foreach (var disable in Benchmarks.DisabledOptionsSets[i])

@@ -33,7 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Brimstone, Version=0.0.6097.9017, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Brimstone, Version=0.0.6097.42069, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Brimstone\Brimstone\bin\Release\Brimstone.dll</HintPath>
     </Reference>
