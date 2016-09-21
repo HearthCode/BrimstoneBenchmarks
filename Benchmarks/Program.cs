@@ -1,4 +1,4 @@
-﻿// NOTE: The benchmarking tools work with commit 1006ccd5 (4th Septmber 2016 - 6:04:14am) onwards
+﻿// NOTE: The benchmarking tools in this build work with Brimstone commit 8983fa21 (20th Septmber 2016 - 3:31:16am) onwards
 
 using System;
 using System.Collections.Generic;

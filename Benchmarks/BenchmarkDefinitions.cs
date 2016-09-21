@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Brimstone.Actions;
 using Brimstone.Entities;
+using Brimstone.QueueActions;
 using Brimstone.Tree;
-using static Brimstone.Behaviours;
+using static Brimstone.Actions;
 
 namespace Brimstone.Benchmark
 {
