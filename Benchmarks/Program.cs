@@ -35,7 +35,7 @@ namespace Brimstone.Benchmark
 			for (int i = 0; i < Benchmarks.DisabledOptionsSets.Count; i++) {
 				// Enable all settings by default
 				foreach (var field in settingsFields)
-					if (field.FieldType.FullName == "Boolean")
+					if (field.FieldType.FullName == "System.Boolean")
 						field.SetValue(null, true);
 
 				// Disable the specified options
