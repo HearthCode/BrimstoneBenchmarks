@@ -37,6 +37,10 @@ namespace Brimstone.Benchmark
 				{ "ArcaneMissiles8UniqueStatesBFS", new Test("Arcane Missiles (8); fuzzy unique game states; BFS; 5 BR + 2 BB per side", Test_8AMUniqueStatesBFS, Default_Setup2, 1) },
 				{ "ArcaneMissiles9UniqueStatesBFS", new Test("Arcane Missiles (9); fuzzy unique game states; BFS; 5 BR + 2 BB per side", Test_9AMUniqueStatesBFS, Default_Setup2, 1) },
 				{ "ArcaneMissiles10UniqueStatesBFS", new Test("Arcane Missiles (10); fuzzy unique game states; BFS; 5 BR + 2 BB per side", Test_10AMUniqueStatesBFS, Default_Setup2, 1) },
+				{ "GameInit", new Test("Game initialization + start time (random decks; single-threaded)", Test_GameInit, Default_Setup, 1000) },
+				{ "GameInitMT", new Test("Game initialization + start time (random decks; multi-threaded)", Test_GameInit_MT, Default_Setup, 1000) },
+				{ "GameEndTurn", new Test("Full game - end turn until fatigue death (random decks; single-threaded)", Test_GameEndTurn, Default_Setup, 1000) },
+				{ "GameEndTurnMT", new Test("Full game - end turn until fatigue death (random decks; multi-threaded)", Test_GameEndTurn_MT, Default_Setup, 1000) },
 			};
 		}
 
@@ -172,6 +176,50 @@ namespace Brimstone.Benchmark
 
 		public void Test_10AMUniqueStatesBFS(Game g, int it) {
 			_missilesUniqueStates(g, it, 10, new BreadthFirstActionWalker());
+		}
+
+		public void Test_GameInit(Game g, int it) {
+			for (int i = 0; i < it; i++) {
+				var game = new Game(HeroClass.Druid, HeroClass.Druid);
+				game.Player1.Deck.Fill();
+				game.Player2.Deck.Fill();
+				game.Start(SkipMulligan: true);
+			}
+		}
+
+		public void Test_GameInit_MT(Game g, int it) {
+			Parallel.For(0, it, i => {
+				var game = new Game(HeroClass.Druid, HeroClass.Druid);
+				game.Player1.Deck.Fill();
+				game.Player2.Deck.Fill();
+				game.Start(SkipMulligan: true);
+			});
+		}
+
+		public void Test_GameEndTurn(Game g, int it) {
+			for (int i = 0; i < it; i++) {
+				var game = new Game(HeroClass.Druid, HeroClass.Druid);
+				game.Player1.Deck.Fill();
+				game.Player2.Deck.Fill();
+				game.Start();
+				game.Player1.Choice.Keep(x => true);
+				game.Player2.Choice.Keep(x => true);
+				while (game.State != GameState.COMPLETE)
+					game.EndTurn();
+			}
+		}
+
+		public void Test_GameEndTurn_MT(Game g, int it) {
+			Parallel.For(0, it, i => {
+				var game = new Game(HeroClass.Druid, HeroClass.Druid);
+				game.Player1.Deck.Fill();
+				game.Player2.Deck.Fill();
+				game.Start();
+				game.Player1.Choice.Keep(x => true);
+				game.Player2.Choice.Keep(x => true);
+				while (game.State != GameState.COMPLETE)
+					game.EndTurn();
+			});
 		}
 	}
 }
