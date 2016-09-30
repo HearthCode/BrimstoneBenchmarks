@@ -41,6 +41,8 @@ namespace Brimstone.Benchmark
 				{ "GameInitMT", new Test("Game initialization + start time (random decks; multi-threaded)", Test_GameInit_MT, Default_Setup, 1000) },
 				{ "GameEndTurn", new Test("Full game - end turn until fatigue death (random decks; single-threaded)", Test_GameEndTurn, Default_Setup, 1000) },
 				{ "GameEndTurnMT", new Test("Full game - end turn until fatigue death (random decks; multi-threaded)", Test_GameEndTurn_MT, Default_Setup, 1000) },
+				{ "TurnTransition", new Test("Turn transition (no decks, fatigue disabled; single-threaded)", Test_TurnTransition, Empty_Setup) },
+				{ "TurnTransitionMT", new Test("Turn transition (no decks, fatigue disabled; multi-threaded)", Test_TurnTransition_MT, Empty_Setup) },
 			};
 		}
 
@@ -53,6 +55,13 @@ namespace Brimstone.Benchmark
 		}
 		public static Game Default_Setup2() {
 			return NewScenarioGame(MaxMinions: 7, NumBoomBots: 2, FillMinion: "Bloodfen Raptor", FillDeck: false);
+		}
+		public static Game Empty_Setup() {
+			var game = new Game(HeroClass.Druid, HeroClass.Druid);
+			game.Player1.DisableFatigue = true;
+			game.Player2.DisableFatigue = true;
+			game.Start(SkipMulligan: true, Shuffle: false);
+			return game;
 		}
 
 		public void Test_RawClone(Game g, int it) {
@@ -183,7 +192,7 @@ namespace Brimstone.Benchmark
 				var game = new Game(HeroClass.Druid, HeroClass.Druid);
 				game.Player1.Deck.Fill();
 				game.Player2.Deck.Fill();
-				game.Start(SkipMulligan: true);
+				game.Start();
 			}
 		}
 
@@ -192,7 +201,7 @@ namespace Brimstone.Benchmark
 				var game = new Game(HeroClass.Druid, HeroClass.Druid);
 				game.Player1.Deck.Fill();
 				game.Player2.Deck.Fill();
-				game.Start(SkipMulligan: true);
+				game.Start();
 			});
 		}
 
@@ -220,6 +229,24 @@ namespace Brimstone.Benchmark
 				while (game.State != GameState.COMPLETE)
 					game.EndTurn();
 			});
+		}
+
+		public void Test_TurnTransition(Game g, int it) {
+			for (int i = 0; i < it; i++) {
+				g.EndTurn();
+			}
+		}
+
+		public void Test_TurnTransition_MT(Game g, int it) {
+			var games = g.CloneStates(System.Environment.ProcessorCount);
+
+			Task.WaitAll(
+				games.Select(game =>
+					Task.Run(() => {
+						// It's approximate
+						for (int i = 0; i < it/games.Count; i++)
+							game.EndTurn();
+					})).ToArray());
 		}
 	}
 }
