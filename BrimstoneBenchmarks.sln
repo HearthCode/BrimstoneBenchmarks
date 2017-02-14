@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmarks", "Benchmarks\Benchmarks.csproj", "{C594CE4E-053C-4832-BCD9-1CE45CB735D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Profiler", "Profiler\Profiler.csproj", "{7525E3B5-F3B0-45C6-A1B6-6A454A7DB1AD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiBuildBenchmarks", "MultiBuildBenchmarks\MultiBuildBenchmarks.csproj", "{7525E3B5-F3B0-45C6-A1B6-6A454A7DB1AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

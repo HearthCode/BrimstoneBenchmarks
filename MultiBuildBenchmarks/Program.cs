@@ -8,15 +8,15 @@ using Microsoft.Build.Exceptions;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Logging;
 
-namespace Brimstone.Profiler
+namespace Brimstone.Benchmarks
 {
-	class Profiler
+	class MultiBuildBenchmarks
 	{
 		public static bool CompilerOutput = false;
 
 		static void Main(string[] args)
 		{
-			string usage = "Usage: profiler --commit-range=oldest-commit-id[,newest-commit-id] [--compiler-output] [--base-path=path-to-solutions] [arguments-to-pass-to-benchmarks]\r\n\r\nIf no base path is specified, Profiler will search all ancestors of the current directory by default";
+			string usage = "Usage: mbbenchmarks --commit-range=oldest-commit-id[,newest-commit-id] [--compiler-output] [--base-path=path-to-solutions] [arguments-to-pass-to-benchmarks]\r\n\r\nIf no base path is specified, MBBenchmarks will search all ancestors of the current directory by default";
 			string benchmarkArguments = string.Empty;
 			string repoPath = string.Empty;
 			string oldestCommitID = string.Empty;
@@ -66,7 +66,7 @@ namespace Brimstone.Profiler
 				repoPath = "..";
 				for (int depth = 0; depth < 20 && !found; depth++) {
 					repoPath = Path.GetFullPath(repoPath);
-					if (Directory.Exists(repoPath + @"\Brimstone") && Directory.Exists(repoPath + @"\BrimstoneProfiler"))
+					if (Directory.Exists(repoPath + @"\Brimstone") && Directory.Exists(repoPath + @"\BrimstoneBenchmarks"))
 						found = true;
 					else
 						repoPath += @"\..";
@@ -145,8 +145,8 @@ namespace Brimstone.Profiler
 					csv += resultSet[col][row] + ",";
 				csv = csv.Substring(0, csv.Length - 1) + "\r\n";
 			}
-			File.WriteAllText(@"profiler.csv", csv);
-			Console.WriteLine("Results written to profiler.csv");
+			File.WriteAllText(@"mbbenchmarks.csv", csv);
+			Console.WriteLine("Results written to mbbenchmarks.csv");
 		}
 
 		public static void Benchmarks(string repoPath, string benchmarkArguments, out List<string> csv) {
@@ -166,12 +166,11 @@ namespace Brimstone.Profiler
 				return;
 
 			// Build Benchmarks
-			if (!TryBuild("Benchmarks", repoPath + @"\BrimstoneProfiler\Benchmarks\Benchmarks.csproj"))
+			if (!TryBuild("Benchmarks", repoPath + @"\BrimstoneBenchmarks\Benchmarks\Benchmarks.csproj"))
 				return;
 
-			// Run Benchmarks twice (the first set is always inaccurate because of JIT compilation)
 			Console.WriteLine("Running benchmarks...\r\n");
-			procInfo = new ProcessStartInfo(repoPath + @"\BrimstoneProfiler\Benchmarks\bin\Release\Benchmarks.exe");
+			procInfo = new ProcessStartInfo(repoPath + @"\BrimstoneBenchmarks\Benchmarks\bin\Release\Benchmarks.exe");
 			procInfo.Arguments = benchmarkArguments;
 			procInfo.UseShellExecute = false;
 			procInfo.WorkingDirectory = Directory.GetCurrentDirectory();
